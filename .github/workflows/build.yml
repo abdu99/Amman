@@ -26,11 +26,11 @@ jobs:
         shell: pwsh
         run: build/publish-encoder.ps1
 
-      - name: Upload Aman.Encoder.exe
+      - name: Upload Aman.Encoder (folder — Aman.Encoder.exe needs Resources\PlayerStub\Player.exe next to it)
         uses: actions/upload-artifact@v4
         with:
           name: Aman.Encoder
-          path: src/Aman.Encoder/bin/Release/net8.0-windows/win-x64/publish/Aman.Encoder.exe
+          path: src/Aman.Encoder/bin/Release/net8.0-windows/win-x64/publish/
           if-no-files-found: error
 
       - name: Upload Player.exe (unpackaged stub, for reference)
