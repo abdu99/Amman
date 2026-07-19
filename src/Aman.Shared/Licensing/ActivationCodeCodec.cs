@@ -46,7 +46,7 @@ public static class ActivationCodeCodec
         using var ecdsa = ECDsa.Create();
         ecdsa.ImportSubjectPublicKeyInfo(vendorPublicKeySpki, out _);
 
-        if (!ecdsa.VerifyData(payload, signature, HashAlgorithmName.SHA256, DSASignatureFormat.IeeeP1363))
+        if (!ecdsa.VerifyData(payload, signature, HashAlgorithmName.SHA256, DSASignatureFormat.IeeeP1363FixedFieldConcatenation))
             return null;
 
         try

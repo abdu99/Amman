@@ -26,6 +26,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- System.Security.Cryptography.ProtectedData (DPAPI) is not part of the
+         framework reference set even on net8.0-windows; it ships as a separate
+         package. Used by VendorIdentityStore to protect the signing private key. -->
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- The built Player.exe stub is copied here by build/publish-player.ps1 before
          Aman.Encoder is published, and is read at runtime (not compiled in). -->
     <None Update="Resources\PlayerStub\**" CopyToOutputDirectory="PreserveNewest" />

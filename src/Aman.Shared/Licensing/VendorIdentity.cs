@@ -33,5 +33,5 @@ public sealed class VendorIdentity
     public byte[] ExportPrivateKeyPkcs8() => _ecdsa.ExportPkcs8PrivateKey();
 
     /// <summary>Fixed-size 64-byte (r||s) signature — deliberately not DER, so downstream layouts can reserve a constant size.</summary>
-    public byte[] Sign(byte[] data) => _ecdsa.SignData(data, HashAlgorithmName.SHA256, DSASignatureFormat.IeeeP1363);
+    public byte[] Sign(byte[] data) => _ecdsa.SignData(data, HashAlgorithmName.SHA256, DSASignatureFormat.IeeeP1363FixedFieldConcatenation);
 }

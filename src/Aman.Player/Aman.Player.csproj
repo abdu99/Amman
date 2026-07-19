@@ -27,4 +27,11 @@
     <ProjectReference Include="..\Aman.Shared\Aman.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- System.Security.Cryptography.ProtectedData (DPAPI) is not part of the
+         framework reference set even on net8.0-windows; it ships as a separate
+         package. Used by RunStateStore to protect the local run counter. -->
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
+  </ItemGroup>
+
 </Project>

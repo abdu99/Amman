@@ -41,7 +41,7 @@ public sealed class ContainerReader
         ecdsa.ImportSubjectPublicKeyInfo(Header.VendorPublicKey, out _);
 
         bool ok = ecdsa.VerifyData(Header.ToSignablePrefixBytes(), Header.HeaderSignature,
-            HashAlgorithmName.SHA256, DSASignatureFormat.IeeeP1363);
+            HashAlgorithmName.SHA256, DSASignatureFormat.IeeeP1363FixedFieldConcatenation);
 
         if (!ok)
             throw new InvalidDataException("AMAN package header failed signature verification — the file may have been tampered with.");
