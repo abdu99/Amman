@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>Aman.Player</RootNamespace>
+    <AssemblyName>Player</AssemblyName>
+    <!-- Drop an aman.ico into Resources\ and uncomment to brand the exe:
+    <ApplicationIcon>Resources\aman.ico</ApplicationIcon>
+    -->
+
+    <!-- This exact publish shape (single, self-contained, framework-dependent-free
+         win-x64 exe) is what Aman.Encoder appends container data to, so it MUST
+         stay a genuinely single output file — see build/publish-player.ps1. -->
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <InvariantGlobalization>false</InvariantGlobalization>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Aman.Shared\Aman.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,8 @@
+bin/
+obj/
+*.user
+.vs/
+*.suo
+
+# Player.exe stub is a build artifact copied in by build/publish-player.ps1 — never commit it.
+src/Aman.Encoder/Resources/PlayerStub/*.exe
