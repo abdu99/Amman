@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Aman.Shared.Localization;
 
 internal static class Strings

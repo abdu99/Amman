@@ -1,3 +1,5 @@
+using System.IO;
+
 namespace Aman.Shared.Container;
 
 public sealed class VideoEntryMeta

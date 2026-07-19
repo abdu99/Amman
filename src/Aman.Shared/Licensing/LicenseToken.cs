@@ -1,3 +1,6 @@
+using System;
+using System.IO;
+
 namespace Aman.Shared.Licensing;
 
 /// <summary>
