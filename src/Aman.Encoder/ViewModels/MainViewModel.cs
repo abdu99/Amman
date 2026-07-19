@@ -4,6 +4,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
+using Aman.Encoder.Models;
 using Aman.Encoder.Services;
 using Aman.Shared.Branding;
 using Aman.Shared.Container;
@@ -18,6 +19,7 @@ public enum ProtectionMode { PasswordOnly, ActivationCode }
 public sealed class MainViewModel : INotifyPropertyChanged
 {
     public ObservableCollection<VideoItemViewModel> Videos { get; } = new();
+    public ObservableCollection<PackageHistoryEntry> BuildHistory { get; } = new();
 
     private readonly PackageBuilderService _packageBuilder = new();
     private readonly VendorIdentity _vendorIdentity = VendorIdentityStore.LoadOrCreate();
@@ -104,11 +106,16 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public ICommand ToggleLanguageCommand { get; }
     public ICommand BuildPackageCommand { get; }
     public ICommand GenerateActivationCodeCommand { get; }
+    public ICommand CopyPackageIdCommand { get; }
+    public ICommand UseForActivationCommand { get; }
 
     public MainViewModel()
     {
         VendorPublicKeyFingerprint = Convert.ToHexString(
             System.Security.Cryptography.SHA256.HashData(_vendorIdentity.PublicKey)).Substring(0, 16);
+
+        foreach (var entry in PackageHistoryStore.Load())
+            BuildHistory.Add(entry);
 
         AddVideosCommand = new RelayCommand(_ => AddVideos());
         RemoveVideoCommand = new RelayCommand(p => { if (p is VideoItemViewModel v) Videos.Remove(v); });
@@ -119,6 +126,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
             Loc.CurrentLanguage = Loc.CurrentLanguage == AppLanguage.Arabic ? AppLanguage.English : AppLanguage.Arabic);
         BuildPackageCommand = new AsyncRelayCommand(_ => BuildPackageAsync(), _ => CanBuild());
         GenerateActivationCodeCommand = new RelayCommand(_ => GenerateActivationCode());
+        CopyPackageIdCommand = new RelayCommand(p => { if (p is PackageHistoryEntry entry) Clipboard.SetText(entry.PackageId.ToString()); });
+        UseForActivationCommand = new RelayCommand(p => { if (p is PackageHistoryEntry entry) ActCodePackageId = entry.PackageId.ToString(); });
     }
 
     private bool CanBuild() =>
@@ -211,6 +220,18 @@ public sealed class MainViewModel : INotifyPropertyChanged
 
             LastPackageId = packageId;
             ActCodePackageId = packageId.ToString();
+
+            var historyEntry = new PackageHistoryEntry
+            {
+                PackageId = packageId,
+                Title = PlayerTitle,
+                BuiltUtc = DateTime.UtcNow,
+                OutputPath = saveDialog.FileName,
+                RequiresActivationCode = requireActivation,
+            };
+            PackageHistoryStore.Append(historyEntry);
+            BuildHistory.Insert(0, historyEntry);
+
             StatusMessage = $"{Loc["build_success"]}: {saveDialog.FileName}";
         }
         catch (Exception ex)

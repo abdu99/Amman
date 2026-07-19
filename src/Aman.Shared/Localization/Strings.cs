@@ -35,6 +35,9 @@ internal static class Strings
         ["vendor_identity"] = new() { [AppLanguage.Arabic] = "هوية التوقيع (البائع)", [AppLanguage.English] = "Vendor Signing Identity" },
         ["generate_activation_code"] = new() { [AppLanguage.Arabic] = "توليد كود تفعيل لجهاز", [AppLanguage.English] = "Generate Activation Code" },
         ["machine_id_input"] = new() { [AppLanguage.Arabic] = "معرّف جهاز المستخدم", [AppLanguage.English] = "Customer Machine ID" },
+        ["build_history"] = new() { [AppLanguage.Arabic] = "سجل الحزم المصدَّرة", [AppLanguage.English] = "Export History" },
+        ["build_history_empty"] = new() { [AppLanguage.Arabic] = "لا توجد حزم مُصدَّرة بعد", [AppLanguage.English] = "No packages exported yet" },
+        ["use_for_activation"] = new() { [AppLanguage.Arabic] = "استخدام", [AppLanguage.English] = "Use" },
 
         // Player
         ["unlock_title"] = new() { [AppLanguage.Arabic] = "أدخل كلمة السر للمتابعة", [AppLanguage.English] = "Enter password to continue" },

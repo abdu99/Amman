@@ -11,6 +11,7 @@
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
         <conv:EnumToBooleanConverter x:Key="EnumToBool" />
+        <conv:ZeroToVisibilityConverter x:Key="CountToVis" />
     </Window.Resources>
 
     <Grid Margin="20">
@@ -156,6 +157,42 @@
 
                             <TextBlock Text="{Binding Loc[accent_color]}" Style="{StaticResource MutedText}" />
                             <TextBox Text="{Binding AccentColorHex}" Margin="0,4,0,0" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource Panel}" Margin="0,0,0,16">
+                        <StackPanel>
+                            <TextBlock Text="{Binding Loc[build_history]}" Style="{StaticResource SectionTitle}" />
+
+                            <TextBlock Text="{Binding Loc[build_history_empty]}" Style="{StaticResource MutedText}"
+                                       Visibility="{Binding BuildHistory.Count, Converter={StaticResource CountToVis}}" />
+
+                            <ItemsControl ItemsSource="{Binding BuildHistory}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border BorderBrush="{DynamicResource BorderBrush2}" BorderThickness="0,0,0,1" Padding="0,8">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel>
+                                                    <TextBlock Text="{Binding Title}" FontWeight="SemiBold" />
+                                                    <TextBlock Text="{Binding PackageId}" Style="{StaticResource MutedText}" FontFamily="Consolas" />
+                                                    <TextBlock Text="{Binding BuiltUtc, StringFormat='{}{0:yyyy-MM-dd HH:mm}'}" Style="{StaticResource MutedText}" />
+                                                </StackPanel>
+                                                <Button Grid.Column="1" Content="{Binding DataContext.Loc[copy], RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                        Command="{Binding DataContext.CopyPackageIdCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                        CommandParameter="{Binding}" Margin="6,0" VerticalAlignment="Center" />
+                                                <Button Grid.Column="2" Content="{Binding DataContext.Loc[use_for_activation], RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                        Command="{Binding DataContext.UseForActivationCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                        CommandParameter="{Binding}" VerticalAlignment="Center" />
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
                         </StackPanel>
                     </Border>
 
