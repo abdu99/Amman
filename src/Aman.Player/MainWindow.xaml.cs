@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using Aman.Player.Services;
 using Aman.Player.ViewModels;
@@ -12,7 +13,10 @@ public partial class MainWindow : Window
     private readonly MainViewModel _viewModel = new();
     private readonly AntiCaptureService _antiCapture = new();
     private readonly DispatcherTimer _positionTimer;
+    private readonly DispatcherTimer _hideControlsTimer;
     private bool _isDraggingSeek;
+    private bool _isMouseOverControls;
+    private bool _controlsVisible = true;
     private readonly Random _rng = new();
 
     public MainWindow()
@@ -23,6 +27,13 @@ public partial class MainWindow : Window
 
         _positionTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(400) };
         _positionTimer.Tick += (_, _) => UpdatePositionUi();
+
+        _hideControlsTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(3) };
+        _hideControlsTimer.Tick += (_, _) =>
+        {
+            _hideControlsTimer.Stop();
+            HideControlsIfIdle();
+        };
     }
 
     private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -35,6 +46,7 @@ public partial class MainWindow : Window
     private void Window_Closing(object? sender, CancelEventArgs e)
     {
         _positionTimer.Stop();
+        _hideControlsTimer.Stop();
         _antiCapture.Dispose();
         _viewModel.Dispose();
     }
@@ -54,6 +66,7 @@ public partial class MainWindow : Window
             Media.Play();
             PlayPauseButton.Content = "⏸";
             _positionTimer.Start();
+            ShowControls();
         });
     }
 
@@ -113,6 +126,8 @@ public partial class MainWindow : Window
         if (e.ClickCount == 2) ToggleFullscreen();
     }
 
+    private void Fullscreen_Click(object sender, RoutedEventArgs e) => ToggleFullscreen();
+
     private void ToggleFullscreen()
     {
         if (WindowStyle == WindowStyle.None)
@@ -125,6 +140,50 @@ public partial class MainWindow : Window
             WindowStyle = WindowStyle.None;
             WindowState = WindowState.Maximized;
         }
+    }
+
+    // --- Auto-hiding controls bar ---
+
+    private void VideoArea_PreviewMouseMove(object sender, MouseEventArgs e) => ShowControls();
+
+    private void ControlsBar_MouseEnter(object sender, MouseEventArgs e)
+    {
+        _isMouseOverControls = true;
+        _hideControlsTimer.Stop();
+        ShowControls();
+    }
+
+    private void ControlsBar_MouseLeave(object sender, MouseEventArgs e)
+    {
+        _isMouseOverControls = false;
+        ResetHideTimer();
+    }
+
+    private void ShowControls()
+    {
+        if (!_controlsVisible)
+        {
+            _controlsVisible = true;
+            ControlsBar.IsHitTestVisible = true;
+            ControlsBar.BeginAnimation(OpacityProperty, new DoubleAnimation(1.0, TimeSpan.FromMilliseconds(150)));
+        }
+        ResetHideTimer();
+    }
+
+    private void ResetHideTimer()
+    {
+        _hideControlsTimer.Stop();
+        _hideControlsTimer.Start();
+    }
+
+    private void HideControlsIfIdle()
+    {
+        if (_isMouseOverControls || _isDraggingSeek || !_controlsVisible) return;
+
+        _controlsVisible = false;
+        var fadeOut = new DoubleAnimation(0.0, TimeSpan.FromMilliseconds(300));
+        fadeOut.Completed += (_, _) => ControlsBar.IsHitTestVisible = _controlsVisible;
+        ControlsBar.BeginAnimation(OpacityProperty, fadeOut);
     }
 
     private void Window_PreviewKeyDown(object sender, KeyEventArgs e)

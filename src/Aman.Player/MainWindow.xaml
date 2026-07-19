@@ -85,8 +85,10 @@
             </Grid.ColumnDefinitions>
 
             <Grid Grid.Column="0" Background="Black">
-                <Border AllowDrop="False" ContextMenu="{x:Null}" PreviewMouseRightButtonDown="Video_PreviewMouseRightButtonDown"
-                        MouseLeftButtonDown="Video_MouseLeftButtonDown">
+                <Border x:Name="VideoArea" AllowDrop="False" ContextMenu="{x:Null}"
+                        PreviewMouseRightButtonDown="Video_PreviewMouseRightButtonDown"
+                        MouseLeftButtonDown="Video_MouseLeftButtonDown"
+                        PreviewMouseMove="VideoArea_PreviewMouseMove">
                     <Grid>
                         <MediaElement x:Name="Media" LoadedBehavior="Manual" UnloadedBehavior="Manual"
                                       Stretch="Uniform" MediaOpened="Media_MediaOpened" MediaEnded="Media_MediaEnded" />
@@ -95,7 +97,8 @@
                         <TextBlock x:Name="Watermark" Text="{Binding MachineIdDisplay}" Foreground="#33FFFFFF"
                                    FontSize="13" Margin="12" IsHitTestVisible="False" />
 
-                        <Grid VerticalAlignment="Bottom" Background="#AA000000">
+                        <Grid x:Name="ControlsBar" VerticalAlignment="Bottom" Background="#AA000000"
+                              MouseEnter="ControlsBar_MouseEnter" MouseLeave="ControlsBar_MouseLeave">
                             <StackPanel Margin="16,10">
                                 <Slider x:Name="SeekSlider" Minimum="0" Maximum="1"
                                         PreviewMouseDown="SeekSlider_PreviewMouseDown" PreviewMouseUp="SeekSlider_PreviewMouseUp" />
@@ -116,6 +119,8 @@
                                         <TextBlock Text="🔊" VerticalAlignment="Center" Margin="0,0,6,0" />
                                         <Slider x:Name="VolumeSlider" Minimum="0" Maximum="1" Value="0.8" Width="90"
                                                 ValueChanged="VolumeSlider_ValueChanged" />
+                                        <Button x:Name="FullscreenButton" Style="{StaticResource TransportButton}" Content="⛶"
+                                                Click="Fullscreen_Click" Margin="10,0,0,0" ToolTip="Fullscreen" />
                                     </StackPanel>
                                 </Grid>
                             </StackPanel>
