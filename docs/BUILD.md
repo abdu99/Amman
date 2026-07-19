@@ -1,6 +1,14 @@
 # تعليمات البناء (Build Instructions)
 
-## المتطلبات
+## أسرع طريقة: GitHub Actions (بدون الحاجة لجهاز Windows)
+
+كل push على أي فرع في هذا المستودع يُشغّل `.github/workflows/build.yml` تلقائيًا على خادم
+Windows سحابي، وينتج `Aman.Encoder.exe` (و`Player.exe` كمرجع) كملفات تحميل (artifacts) جاهزة —
+تجدها في تبويب **Actions** في GitHub، داخل آخر تشغيل ناجح، أسفل قسم "Artifacts". هذه الطريقة
+لا تتطلب أي إعداد محلي، لكنها تفترض أن الكود يُترجم دون أخطاء؛ إن فشل التشغيل، افتح السجلات
+(logs) من نفس الصفحة لمعرفة السبب بالتفصيل.
+
+## المتطلبات (للبناء المحلي)
 
 - **Windows 10 (2004+) أو Windows 11** — كل من Aman.Encoder و Aman.Player تطبيقات WPF، ولا تعملان إلا على ويندوز.
 - **.NET 8 SDK** (وليس فقط الـ Runtime) — [تنزيل](https://dotnet.microsoft.com/download/dotnet/8.0).

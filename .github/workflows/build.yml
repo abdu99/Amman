@@ -1,0 +1,41 @@
+name: Build AMAN
+
+on:
+  push:
+    branches: ["**"]
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Publish Aman.Player (stub) and copy into Encoder
+        shell: pwsh
+        run: build/publish-player.ps1
+
+      - name: Publish Aman.Encoder (embeds the Player stub)
+        shell: pwsh
+        run: build/publish-encoder.ps1
+
+      - name: Upload Aman.Encoder.exe
+        uses: actions/upload-artifact@v4
+        with:
+          name: Aman.Encoder
+          path: src/Aman.Encoder/bin/Release/net8.0-windows/win-x64/publish/Aman.Encoder.exe
+          if-no-files-found: error
+
+      - name: Upload Player.exe (unpackaged stub, for reference)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Player-stub
+          path: src/Aman.Player/bin/Release/net8.0-windows/win-x64/publish/Player.exe
+          if-no-files-found: error
