@@ -232,7 +232,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
             PackageHistoryStore.Append(historyEntry);
             BuildHistory.Insert(0, historyEntry);
 
-            StatusMessage = $"{Loc["build_success"]}: {saveDialog.FileName}";
+            double sizeMb = new FileInfo(saveDialog.FileName).Length / (1024.0 * 1024.0);
+            StatusMessage = $"{Loc["build_success"]}: {saveDialog.FileName} ({sizeMb:0.0} MB)";
         }
         catch (Exception ex)
         {

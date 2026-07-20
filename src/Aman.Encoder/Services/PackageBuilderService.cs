@@ -30,17 +30,35 @@ public sealed class PackageBuilderService
         IProgress<double>? progress = null, CancellationToken ct = default)
     {
         string stubPath = LocatePlayerStub();
+        long stubLength = new FileInfo(stubPath).Length;
 
         string? dir = Path.GetDirectoryName(outputExePath);
         if (!string.IsNullOrEmpty(dir)) Directory.CreateDirectory(dir);
 
-        await using (var output = new FileStream(outputExePath, FileMode.Create, FileAccess.Write, FileShare.None,
-                   bufferSize: 1 << 20, useAsync: true))
+        try
         {
-            await using (var stub = new FileStream(stubPath, FileMode.Open, FileAccess.Read, FileShare.Read))
-                await stub.CopyToAsync(output, ct);
+            await using (var output = new FileStream(outputExePath, FileMode.Create, FileAccess.Write, FileShare.None,
+                       bufferSize: 1 << 20, useAsync: true))
+            {
+                await using (var stub = new FileStream(stubPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                    await stub.CopyToAsync(output, ct);
 
-            await ContainerWriter.BuildAsync(request, signer, output, progress, ct);
+                if (output.Position != stubLength)
+                {
+                    throw new IOException(
+                        $"Only {output.Position:N0} of {stubLength:N0} bytes of the player stub were written " +
+                        $"to '{outputExePath}' — the disk may be full or the destination unwritable.");
+                }
+
+                await ContainerWriter.BuildAsync(request, signer, output, progress, ct);
+            }
+        }
+        catch
+        {
+            // A partially-written .exe left at the destination looks like a real, working
+            // package but isn't — delete it rather than let a failed export masquerade as one.
+            try { File.Delete(outputExePath); } catch { /* best effort cleanup */ }
+            throw;
         }
     }
 }
