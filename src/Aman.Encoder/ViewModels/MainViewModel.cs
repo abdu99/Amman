@@ -180,43 +180,55 @@ public sealed class MainViewModel : INotifyPropertyChanged
         var saveDialog = new SaveFileDialog { Filter = "Application (*.exe)|*.exe", FileName = $"{PlayerTitle}.exe" };
         if (saveDialog.ShowDialog() != true) return;
 
+        var packageId = Guid.NewGuid();
+
+        byte[] logoBytes = !string.IsNullOrEmpty(LogoPath) && File.Exists(LogoPath)
+            ? await File.ReadAllBytesAsync(LogoPath)
+            : Array.Empty<byte>();
+
+        var branding = new BrandingInfo
+        {
+            Title = PlayerTitle,
+            Theme = SelectedTheme,
+            AccentColorHex = AccentColorHex,
+            LogoPng = logoBytes,
+        };
+
+        var videos = Videos.Select(v => new VideoSourceItem { Id = v.Id, Title = v.Title, FilePath = v.FilePath }).ToList();
+
+        bool requireActivation = SelectedProtectionMode == ProtectionMode.ActivationCode;
+
+        var request = new ContainerBuildRequest
+        {
+            PackageId = packageId,
+            Password = Password,
+            RequireActivationCode = requireActivation,
+            ExpiresUtc = IsExpiryEnabled ? ExpiryDate.ToUniversalTime() : null,
+            MaxRuns = IsMaxRunsEnabled ? MaxRunsValue : null,
+            Branding = branding,
+            Videos = videos,
+        };
+
+        // Windows can't run a single .exe past ~4 GiB — warn and let the seller back out
+        // before spending minutes encrypting, rather than silently switching format on them.
+        long estimatedSize = PackageBuilderService.EstimatePackageSize(request);
+        if (estimatedSize > PackageBuilderService.SingleExeSizeLimit)
+        {
+            double estimatedGb = estimatedSize / (1024.0 * 1024.0 * 1024.0);
+            var confirm = MessageBox.Show(
+                string.Format(Loc["large_package_confirm"], estimatedGb.ToString("0.0")),
+                Loc["app_name"], MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (confirm != MessageBoxResult.Yes) return;
+        }
+
         IsBuilding = true;
         BuildProgress = 0;
         StatusMessage = Loc["building"];
 
         try
         {
-            var packageId = Guid.NewGuid();
-
-            byte[] logoBytes = !string.IsNullOrEmpty(LogoPath) && File.Exists(LogoPath)
-                ? await File.ReadAllBytesAsync(LogoPath)
-                : Array.Empty<byte>();
-
-            var branding = new BrandingInfo
-            {
-                Title = PlayerTitle,
-                Theme = SelectedTheme,
-                AccentColorHex = AccentColorHex,
-                LogoPng = logoBytes,
-            };
-
-            var videos = Videos.Select(v => new VideoSourceItem { Id = v.Id, Title = v.Title, FilePath = v.FilePath }).ToList();
-
-            bool requireActivation = SelectedProtectionMode == ProtectionMode.ActivationCode;
-
-            var request = new ContainerBuildRequest
-            {
-                PackageId = packageId,
-                Password = Password,
-                RequireActivationCode = requireActivation,
-                ExpiresUtc = IsExpiryEnabled ? ExpiryDate.ToUniversalTime() : null,
-                MaxRuns = IsMaxRunsEnabled ? MaxRunsValue : null,
-                Branding = branding,
-                Videos = videos,
-            };
-
             var progress = new Progress<double>(p => BuildProgress = p * 100.0);
-            await _packageBuilder.BuildAsync(request, _vendorIdentity, saveDialog.FileName, progress);
+            var buildResult = await _packageBuilder.BuildAsync(request, _vendorIdentity, saveDialog.FileName, progress);
 
             LastPackageId = packageId;
             ActCodePackageId = packageId.ToString();
@@ -226,14 +238,14 @@ public sealed class MainViewModel : INotifyPropertyChanged
                 PackageId = packageId,
                 Title = PlayerTitle,
                 BuiltUtc = DateTime.UtcNow,
-                OutputPath = saveDialog.FileName,
+                OutputPath = buildResult.ExePath,
+                SidecarPath = buildResult.SidecarPath,
                 RequiresActivationCode = requireActivation,
             };
             PackageHistoryStore.Append(historyEntry);
             BuildHistory.Insert(0, historyEntry);
 
-            double sizeMb = new FileInfo(saveDialog.FileName).Length / (1024.0 * 1024.0);
-            StatusMessage = $"{Loc["build_success"]}: {saveDialog.FileName} ({sizeMb:0.0} MB)";
+            StatusMessage = FormatSuccessMessage(buildResult);
         }
         catch (Exception ex)
         {
@@ -244,6 +256,17 @@ public sealed class MainViewModel : INotifyPropertyChanged
         {
             IsBuilding = false;
         }
+    }
+
+    private string FormatSuccessMessage(PackageBuildResult result)
+    {
+        double exeMb = result.ExeSizeBytes / (1024.0 * 1024.0);
+        if (!result.UsedSidecar)
+            return $"{Loc["build_success"]}: {result.ExePath} ({exeMb:0.0} MB)";
+
+        double sidecarMb = (result.SidecarSizeBytes ?? 0) / (1024.0 * 1024.0);
+        return $"{Loc["build_success_sidecar"]}: {Path.GetFileName(result.ExePath)} ({exeMb:0.0} MB) + " +
+               $"{Path.GetFileName(result.SidecarPath)} ({sidecarMb:0.0} MB)";
     }
 
     private void GenerateActivationCode()

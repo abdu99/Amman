@@ -12,6 +12,7 @@
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
         <conv:EnumToBooleanConverter x:Key="EnumToBool" />
         <conv:ZeroToVisibilityConverter x:Key="CountToVis" />
+        <conv:NullToVisibilityConverter x:Key="NullToVis" />
     </Window.Resources>
 
     <Grid Margin="20">
@@ -181,6 +182,9 @@
                                                     <TextBlock Text="{Binding Title}" FontWeight="SemiBold" />
                                                     <TextBlock Text="{Binding PackageId}" Style="{StaticResource MutedText}" FontFamily="Consolas" />
                                                     <TextBlock Text="{Binding BuiltUtc, StringFormat='{}{0:yyyy-MM-dd HH:mm}'}" Style="{StaticResource MutedText}" />
+                                                    <TextBlock Text="{Binding DataContext.Loc[sidecar_indicator], RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                               Foreground="{DynamicResource AccentBrush}" FontSize="11"
+                                                               Visibility="{Binding SidecarPath, Converter={StaticResource NullToVis}}" />
                                                 </StackPanel>
                                                 <Button Grid.Column="1" Content="{Binding DataContext.Loc[copy], RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                         Command="{Binding DataContext.CopyPackageIdCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"

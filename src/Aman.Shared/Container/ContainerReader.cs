@@ -8,27 +8,29 @@ namespace Aman.Shared.Container;
 
 public sealed class ContainerReader
 {
-    public string FilePath { get; }
+    /// <summary>The file that actually holds the encrypted bytes — the running exe itself for
+    /// packages under the single-file size limit, or a sidecar .aman file for larger ones.</summary>
+    public string DataFilePath { get; }
     public long BlobStart { get; }
     public ContainerHeader Header { get; }
 
-    private ContainerReader(string filePath, long blobStart, ContainerHeader header)
+    private ContainerReader(string dataFilePath, long blobStart, ContainerHeader header)
     {
-        FilePath = filePath;
+        DataFilePath = dataFilePath;
         BlobStart = blobStart;
         Header = header;
     }
 
-    public static ContainerReader Open(string filePath)
+    public static ContainerReader Open(string exePath)
     {
-        var (blobStart, _) = SelfExeLocator.Locate(filePath);
+        var (dataFilePath, blobStart, _) = SelfExeLocator.LocateContainer(exePath);
 
-        using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+        using var fs = new FileStream(dataFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
         fs.Seek(blobStart, SeekOrigin.Begin);
         using var br = new BinaryReader(fs, Encoding.UTF8, leaveOpen: true);
         var header = ContainerHeader.ReadFrom(br);
 
-        return new ContainerReader(filePath, blobStart, header);
+        return new ContainerReader(dataFilePath, blobStart, header);
     }
 
     /// <summary>Throws if a vendor signature is present but does not verify — catches a tampered/corrupted header.</summary>
@@ -66,5 +68,5 @@ public sealed class ContainerReader
     }
 
     public Stream OpenEntryStream(VideoEntryMeta entry, byte[] contentKey)
-        => new DecryptingEntryStream(FilePath, BlobStart, entry, contentKey);
+        => new DecryptingEntryStream(DataFilePath, BlobStart, entry, contentKey);
 }

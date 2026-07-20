@@ -12,4 +12,8 @@ public sealed class PackageHistoryEntry
     public required DateTime BuiltUtc { get; init; }
     public required string OutputPath { get; init; }
     public required bool RequiresActivationCode { get; init; }
+
+    /// <summary>Non-null if this package exceeded the single-.exe size limit and was built as
+    /// Player.exe + a sidecar .aman data file — the two must be distributed together.</summary>
+    public string? SidecarPath { get; init; }
 }

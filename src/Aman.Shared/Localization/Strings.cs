@@ -38,6 +38,19 @@ internal static class Strings
         ["build_history"] = new() { [AppLanguage.Arabic] = "سجل الحزم المصدَّرة", [AppLanguage.English] = "Export History" },
         ["build_history_empty"] = new() { [AppLanguage.Arabic] = "لا توجد حزم مُصدَّرة بعد", [AppLanguage.English] = "No packages exported yet" },
         ["use_for_activation"] = new() { [AppLanguage.Arabic] = "استخدام", [AppLanguage.English] = "Use" },
+        ["large_package_confirm"] = new()
+        {
+            [AppLanguage.Arabic] = "حجم الحزمة المتوقَّع ({0} جيجابايت) يتجاوز الحد الأقصى لملف EXE واحد على ويندوز (~4 جيجابايت). " +
+                "سيتم تصدير الحزمة كملفين يجب توزيعهما معًا: المشغّل (.exe) وملف بيانات مشفّرة (.aman) بنفس الاسم بجانبه. هل تريد المتابعة؟",
+            [AppLanguage.English] = "The estimated package size ({0} GB) exceeds the ~4 GB limit for a single Windows .exe. " +
+                "It will be exported as two files that must be distributed together: the player (.exe) and an encrypted data file (.aman) with the same name next to it. Continue?",
+        },
+        ["build_success_sidecar"] = new()
+        {
+            [AppLanguage.Arabic] = "تم تصدير الحزمة بنجاح (ملفان — احتفظ بهما معًا)",
+            [AppLanguage.English] = "Package exported successfully (two files — keep them together)",
+        },
+        ["sidecar_indicator"] = new() { [AppLanguage.Arabic] = "ملفان (exe + aman)", [AppLanguage.English] = "Two files (exe + aman)" },
 
         // Player
         ["unlock_title"] = new() { [AppLanguage.Arabic] = "أدخل كلمة السر للمتابعة", [AppLanguage.English] = "Enter password to continue" },
