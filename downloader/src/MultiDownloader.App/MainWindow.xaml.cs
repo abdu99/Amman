@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using MessageBox = System.Windows.MessageBox; // disambiguate vs System.Windows.Forms.MessageBox
 using MultiDownloader.App.ViewModels;
