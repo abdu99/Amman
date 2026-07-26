@@ -1,0 +1,9 @@
+bin/
+obj/
+*.user
+.vs/
+*.suo
+
+# Downloaded at runtime by YtDlpBootstrapper — never commit vendored binaries here.
+tools/yt-dlp.exe
+tools/ffmpeg.exe

@@ -1,0 +1,55 @@
+<Window x:Class="MultiDownloader.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="برنامج التنزيل المتعدد" Height="600" Width="900"
+        FlowDirection="RightToLeft"
+        Background="{StaticResource BackgroundBrush}">
+    <DockPanel Margin="12">
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,12">
+            <Button Content="+ إضافة تنزيل" Click="AddDownload_Click" />
+            <Button Content="استئناف الكل" Style="{StaticResource SecondaryButton}" Click="ResumeAll_Click" />
+            <Button Content="إيقاف الكل مؤقتًا" Style="{StaticResource SecondaryButton}" Click="PauseAll_Click" />
+            <Button Content="الإعدادات" Style="{StaticResource SecondaryButton}" Click="Settings_Click" />
+        </StackPanel>
+
+        <TextBlock DockPanel.Dock="Bottom" Margin="0,8,0,0" Opacity="0.6" FontSize="11"
+                   Text="يدعم تنزيلات متعددة في آنٍ واحد، الاستئناف بعد التوقف، وفيديوهات/صوتيات يوتيوب والمواقع عبر yt-dlp." />
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding Items}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Background="White" BorderBrush="{StaticResource BorderBrush2}" BorderThickness="1"
+                                CornerRadius="6" Padding="12" Margin="0,0,0,8">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="{Binding DisplayName}" FontWeight="Bold" TextTrimming="CharacterEllipsis" />
+                                    <ProgressBar Value="{Binding ProgressPercent, Mode=OneWay}" Minimum="0" Maximum="100"
+                                                 Height="10" Margin="0,6,0,4" />
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding StatusText}" Margin="0,0,12,0" />
+                                        <TextBlock Text="{Binding SizeText}" Margin="0,0,12,0" Opacity="0.7" />
+                                        <TextBlock Text="{Binding SpeedText}" Margin="0,0,12,0" Opacity="0.7" />
+                                        <TextBlock Text="{Binding EtaText}" Opacity="0.7" />
+                                    </StackPanel>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Button Content="إيقاف" Click="PauseItem_Click"
+                                            Visibility="{Binding CanPause, Converter={StaticResource BoolToVis}}" />
+                                    <Button Content="استئناف" Click="ResumeItem_Click"
+                                            Visibility="{Binding CanResume, Converter={StaticResource BoolToVis}}" />
+                                    <Button Content="فتح المجلد" Style="{StaticResource SecondaryButton}" Click="OpenFolder_Click" />
+                                    <Button Content="حذف" Style="{StaticResource DangerButton}" Click="RemoveItem_Click" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </DockPanel>
+</Window>

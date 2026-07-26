@@ -1,0 +1,25 @@
+<Window x:Class="MultiDownloader.App.Views.FormatPickerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="اختيار الجودة/الصيغة" Height="480" Width="560" WindowStartupLocation="CenterOwner"
+        FlowDirection="RightToLeft" Background="{StaticResource BackgroundBrush}">
+    <DockPanel Margin="16">
+        <TextBlock DockPanel.Dock="Top" FontWeight="Bold" Margin="0,0,0,8" x:Name="TitleText" TextWrapping="Wrap" />
+
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,10">
+            <Button Content="أفضل جودة (فيديو + صوت)" Click="BestBoth_Click" />
+            <Button Content="أفضل جودة فيديو فقط" Style="{StaticResource SecondaryButton}" Click="BestVideoOnly_Click" />
+            <Button Content="صوت فقط (MP3)" Style="{StaticResource SecondaryButton}" Click="AudioOnly_Click" />
+        </StackPanel>
+
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,10,0,0">
+            <Button Content="اختيار هذه الصيغة" Click="ChooseSelected_Click" />
+            <Button Content="إلغاء" Style="{StaticResource SecondaryButton}" Click="Cancel_Click" />
+        </StackPanel>
+
+        <TextBlock DockPanel.Dock="Bottom" Text="أو اختر صيغة محدَّدة من القائمة أدناه (كل الصيغ المتوفرة من الرابط):"
+                   Margin="0,4,0,6" Opacity="0.7" />
+
+        <ListView x:Name="FormatsListView" />
+    </DockPanel>
+</Window>
