@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Windows;
+using MessageBox = System.Windows.MessageBox; // disambiguate vs System.Windows.Forms.MessageBox
 using MultiDownloader.App.ViewModels;
 using MultiDownloader.App.Views;
 using MultiDownloader.Core.Settings;

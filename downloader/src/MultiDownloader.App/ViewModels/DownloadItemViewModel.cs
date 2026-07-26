@@ -1,5 +1,5 @@
 using System.ComponentModel;
-using System.Windows;
+using Application = System.Windows.Application; // disambiguate vs System.Windows.Forms.Application
 using MultiDownloader.Core.Models;
 
 namespace MultiDownloader.App.ViewModels;

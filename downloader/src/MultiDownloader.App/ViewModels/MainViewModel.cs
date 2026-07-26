@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
-using System.Windows;
+using System.Net.Http;
+using System.Threading;
+using Application = System.Windows.Application; // disambiguate vs System.Windows.Forms.Application (WinForms is used only for FolderBrowserDialog)
 using MultiDownloader.Core.Extractors;
 using MultiDownloader.Core.Queue;
 using MultiDownloader.Core.Settings;

@@ -1,4 +1,5 @@
 using System.Windows;
+using MessageBox = System.Windows.MessageBox; // disambiguate vs System.Windows.Forms.MessageBox
 using MultiDownloader.Core.Extractors;
 using MultiDownloader.Core.Models;
 

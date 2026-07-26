@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Windows;
 using MultiDownloader.App.ViewModels;
 using MultiDownloader.Core.Extractors;
