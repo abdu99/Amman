@@ -213,7 +213,7 @@ public sealed class SegmentedFileDownloader
             writeOffset += read;
             segment.Downloaded += read;
             item.AddDownloadedBytes(read);
-            await persist(force: false);
+            await persist(false);
         }
     }
 
